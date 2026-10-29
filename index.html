@@ -8,7 +8,7 @@
 </head>
 <body class="bg-slate-100 font-sans h-screen overflow-hidden">
 
-    <!-- ================= 1. HALAMAN LOGIN UTAMA ================= -->
+    <!-- ================= 1. HALAMAN LOGIN ================= -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
             <div class="text-center mb-6">
@@ -38,7 +38,7 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
             <div class="text-center mb-4">
                 <h3 class="text-lg font-bold text-slate-800">🔒 Wajib Ganti Password</h3>
-                <p class="text-xs text-slate-500 mt-1">Demi keamanan akun, silakan buat password baru Anda sebelum melanjutkan.</p>
+                <p class="text-xs text-slate-500 mt-1">Demi keamanan akun, silakan buat password baru Anda.</p>
             </div>
             <form onsubmit="saveNewPassword(event)" class="space-y-4">
                 <div>
@@ -52,7 +52,77 @@
         </div>
     </div>
 
-    <!-- ================= 3. DASHBOARD UTAMA ================= -->
+    <!-- ================= 3. MODAL INPUT PESANAN & RESI ================= -->
+    <div id="orderModal" class="fixed inset-0 bg-slate-900/80 z-40 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">🛒 Input Pesanan & Nomor Resi Baru</h3>
+            <form onsubmit="submitOrder(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Produk / Barang</label>
+                    <input type="text" id="ordProductName" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Contoh: Mainan Robot Transformer">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga Jual (Rp)</label>
+                        <input type="number" id="ordPrice" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="50000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Modal / HPP (Rp)</label>
+                        <input type="number" id="ordHpp" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="30000">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nomor Resi (AWB)</label>
+                    <input type="text" id="ordAwb" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="JP1234567890">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Status Pengiriman</label>
+                    <select id="ordStatus" class="w-full px-3 py-2 border rounded-xl text-sm bg-white">
+                        <option value="Dikemas">Dikemas</option>
+                        <option value="Dikirim">Dikirim (Transit)</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 mt-5">
+                    <button type="button" onclick="closeOrderModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-semibold">Simpan Pesanan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 4. MODAL TAMBAH PRODUK ================= -->
+    <div id="productModal" class="fixed inset-0 bg-slate-900/80 z-40 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">📦 Tambah Produk & Stok Baru</h3>
+            <form onsubmit="submitProduct(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Produk Mainan</label>
+                    <input type="text" id="prodName" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Contoh: Mobil RC Drift">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Modal (HPP)</label>
+                        <input type="number" id="prodHpp" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="40000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga Jual</label>
+                        <input type="number" id="prodPrice" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="75000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Stok Awal</label>
+                        <input type="number" id="prodStock" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="10">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 mt-5">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold">Simpan Produk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 5. DASHBOARD UTAMA ================= -->
     <div id="appContainer" class="flex h-screen overflow-hidden hidden">
         
         <!-- SIDEBAR -->
@@ -103,14 +173,14 @@
                     <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
                     <span class="text-sm font-medium">Mode Operasional Manual Toko: Terhubung ke TiDB Cloud</span>
                 </div>
-                <button onclick="alert('Form Input Pesanan Baru')" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition">
+                <button onclick="openOrderModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition">
                     🛒 + Input Pesanan Baru
                 </button>
             </header>
 
             <div class="p-8 max-w-7xl mx-auto w-full">
                 <div id="dynamicContent" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                    <!-- Konten Dinamis Sidebar -->
+                    <!-- Konten Dinamis -->
                 </div>
             </div>
         </main>
@@ -123,6 +193,9 @@
         ];
 
         let usersDB = JSON.parse(localStorage.getItem('khanza_users_db')) || defaultUsers;
+        let auditLogs = JSON.parse(localStorage.getItem('khanza_audit_logs')) || [
+            { time: new Date().toLocaleString(), text: "Sistem diinisialisasi & terhubung ke TiDB Cloud." }
+        ];
         let currentUser = null;
 
         window.onload = function() {
@@ -138,6 +211,12 @@
             }
         }
 
+        function logActivity(text) {
+            const timeStr = new Date().toLocaleString('id-ID');
+            auditLogs.unshift({ time: timeStr, text: `[${currentUser ? currentUser.name : 'SYSTEM'}] ${text}` });
+            localStorage.setItem('khanza_audit_logs', JSON.stringify(auditLogs));
+        }
+
         function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('loginUser').value.trim().toLowerCase();
@@ -147,6 +226,7 @@
             if (found) {
                 currentUser = found;
                 localStorage.setItem('khanza_current_user', JSON.stringify(currentUser));
+                logActivity("Berhasil login ke sistem.");
                 document.getElementById('loginScreen').classList.add('hidden');
                 
                 if (currentUser.mustChangePass) {
@@ -173,6 +253,7 @@
             usersDB = usersDB.map(x => x.username === currentUser.username ? currentUser : x);
             localStorage.setItem('khanza_users_db', JSON.stringify(usersDB));
             localStorage.setItem('khanza_current_user', JSON.stringify(currentUser));
+            logActivity("Mengubah password akun.");
 
             document.getElementById('changePassModal').classList.add('hidden');
             alert('Password berhasil diperbarui!');
@@ -180,6 +261,7 @@
         }
 
         function handleLogout() {
+            logActivity("Keluar dari sesi.");
             localStorage.removeItem('khanza_current_user');
             location.reload();
         }
@@ -192,7 +274,7 @@
             document.getElementById('profileName').innerText = currentUser.name;
             document.getElementById('profileRole').innerText = currentUser.role === 'owner' ? 'Super Admin (Owner)' : 'Karyawan Gudang';
             
-            switchTab('dashboard');
+            switchTab('products');
         }
 
         function switchTab(tab) {
@@ -211,19 +293,19 @@
             if (tab === 'dashboard') {
                 container.innerHTML = `
                     <h2 class="text-xl font-bold text-slate-800 mb-2">📊 Dashboard & Analisis Profit Keuangan</h2>
-                    <p class="text-sm text-slate-500 mb-6">Laporan riil pemasukan, modal, dan laba bersih dari TiDB Cloud.</p>
+                    <p class="text-sm text-slate-500 mb-6">Laporan pemasukan dan laba bersih dari transaksi riil TiDB Cloud.</p>
                     <div class="grid grid-cols-3 gap-6 mb-8">
                         <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
                             <p class="text-xs text-indigo-600 font-bold uppercase">Total Omset Penjualan</p>
-                            <h3 id="statOmset" class="text-2xl font-bold text-indigo-900 mt-1">Menghitung...</h3>
+                            <h3 id="statOmset" class="text-2xl font-bold text-indigo-900 mt-1">Memuat...</h3>
                         </div>
                         <div class="bg-rose-50 border border-rose-100 p-5 rounded-2xl">
                             <p class="text-xs text-rose-600 font-bold uppercase">Total Modal (HPP)</p>
-                            <h3 id="statModal" class="text-2xl font-bold text-rose-900 mt-1">Menghitung...</h3>
+                            <h3 id="statModal" class="text-2xl font-bold text-rose-900 mt-1">Memuat...</h3>
                         </div>
                         <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
                             <p class="text-xs text-emerald-600 font-bold uppercase">Profit Bersih Owner</p>
-                            <h3 id="statProfit" class="text-2xl font-bold text-emerald-900 mt-1">Menghitung...</h3>
+                            <h3 id="statProfit" class="text-2xl font-bold text-emerald-900 mt-1">Memuat...</h3>
                         </div>
                     </div>`;
                 loadDashboardStats();
@@ -235,7 +317,7 @@
                             <h2 class="text-xl font-bold text-slate-800">Master Data Produk & Sisa Stok Gudang</h2>
                             <p class="text-sm text-slate-500">Kelola nama produk, HPP, harga jual, dan sisa stok barang</p>
                         </div>
-                        <button onclick="alert('Tambah Produk')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">+ Tambah Produk Baru</button>
+                        <button onclick="openProductModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">+ Tambah Produk Baru</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -256,58 +338,136 @@
                     </div>`;
                 loadProductsData();
             } 
-            else if (tab === 'employees') {
-                let staffListHTML = usersDB.map(u => `
-                    <div class="p-4 border rounded-xl flex justify-between items-center bg-slate-50">
-                        <div><strong>${u.name}</strong> <span class="text-xs bg-slate-200 px-2 py-0.5 rounded ml-2">User: ${u.username}</span><br><span class="text-xs text-slate-400">Role: ${u.role.toUpperCase()}</span></div>
-                        <span class="${u.role === 'owner' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'} px-3 py-1 rounded-full text-xs font-bold">${u.role.toUpperCase()}</span>
-                    </div>`).join('');
-
-                container.innerHTML = `
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-800">👥 Kelola Data Karyawan & Akses</h2>
-                            <p class="text-sm text-slate-500">Tambah akun staff baru atau kelola akses operasional gudang.</p>
-                        </div>
-                        <button onclick="modalTambahKaryawan()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">+ Tambah Karyawan Baru</button>
-                    </div>
-                    <div class="space-y-3" id="employeeListContainer">${staffListHTML}</div>`;
-            }
             else if (tab === 'tracking') {
-                container.innerHTML = `<h2 class="text-xl font-bold text-slate-800 mb-2">🚚 Tracking Resi & Logistik</h2><p class="text-sm text-slate-500">Pantau pengiriman pesanan.</p>`;
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">🚚 Tracking Resi & Logistik Pengiriman</h2>
+                        <p class="text-sm text-slate-500">Daftar resi dan status pengiriman pesanan paket.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
+                                    <th class="py-3 px-4">No Resi (AWB)</th>
+                                    <th class="py-3 px-4">Nama Produk</th>
+                                    <th class="py-3 px-4">Harga</th>
+                                    <th class="py-3 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTableBody" class="text-sm text-slate-700 divide-y divide-slate-100">
+                                <tr><td colspan="4" class="py-6 text-center text-slate-400">Memuat data resi...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>`;
+                loadTrackingData();
+            }
+            else if (tab === 'employees') {
+                renderEmployeeManagement(container);
             }
             else if (tab === 'audit') {
-                container.innerHTML = `<h2 class="text-xl font-bold text-slate-800 mb-2">🔒 Secret Audit Log</h2><p class="text-sm text-slate-500">Log aktivitas sistem tercatat aman.</p>`;
+                let logsHtml = auditLogs.map(l => `<div class="p-2 border-b border-slate-800 text-xs font-mono"><span class="text-slate-400">[${l.time}]</span> ${l.text}</div>`).join('');
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">🔒 Secret Audit Log & Aktivitas Sistem</h2>
+                    <p class="text-sm text-slate-500 mb-6">Jejak aktivitas seluruh user yang masuk dan melakukan perubahan data.</p>
+                    <div class="bg-slate-900 text-emerald-400 p-4 rounded-xl max-h-96 overflow-y-auto">${logsHtml}</div>`;
             }
         }
 
-        // FUNGSI UTAMA KALKULASI PROFiT REAL-TIME DARI TiDB CLOUD
-        async function loadDashboardStats() {
+        // ================= MODAL & AKSI PESANAN =================
+        function openOrderModal() { document.getElementById('orderModal').classList.remove('hidden'); }
+        function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
+
+        async function submitOrder(e) {
+            e.preventDefault();
+            const payload = {
+                action: 'add_order',
+                product_name: document.getElementById('ordProductName').value.trim(),
+                price: Number(document.getElementById('ordPrice').value),
+                hpp: Number(document.getElementById('ordHpp').value),
+                awb: document.getElementById('ordAwb').value.trim(),
+                status: document.getElementById('ordStatus').value
+            };
+
             try {
-                const res = await fetch('/api/db?action=get_orders');
+                const res = await fetch('/api/db', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
                 const json = await res.json();
-                
-                let totalOmset = 0;
-                let totalModal = 0;
-
-                if (json.success && json.data.length > 0) {
-                    json.data.forEach(o => {
-                        totalOmset += Number(o.price || 0);
-                        totalModal += Number(o.hpp || 0);
-                    });
+                if (json.success || res.ok) {
+                    logActivity(`Menambahkan pesanan baru: ${payload.product_name} (Resi: ${payload.awb})`);
+                    alert('Pesanan & Resi berhasil disimpan ke Cloud!');
+                    closeOrderModal();
+                    switchTab('tracking');
+                } else {
+                    alert('Gagal menyimpan pesanan.');
                 }
-
-                let totalProfit = totalOmset - totalModal;
-
-                document.getElementById('statOmset').innerText = `Rp ${totalOmset.toLocaleString('id-ID')}`;
-                document.getElementById('statModal').innerText = `Rp ${totalModal.toLocaleString('id-ID')}`;
-                document.getElementById('statProfit').innerText = `Rp ${totalProfit.toLocaleString('id-ID')}`;
             } catch (err) {
                 console.error(err);
-                document.getElementById('statOmset').innerText = "Rp 0";
-                document.getElementById('statModal').innerText = "Rp 0";
-                document.getElementById('statProfit').innerText = "Rp 0";
+                alert('Terjadi kesalahan koneksi.');
             }
+        }
+
+        // ================= MODAL & AKSI PRODUK =================
+        function openProductModal() { document.getElementById('productModal').classList.remove('hidden'); }
+        function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+        async function submitProduct(e) {
+            e.preventDefault();
+            const payload = {
+                action: 'add_product',
+                name: document.getElementById('prodName').value.trim(),
+                hpp: Number(document.getElementById('prodHpp').value),
+                price: Number(document.getElementById('prodPrice').value),
+                stock: Number(document.getElementById('prodStock').value)
+            };
+
+            try {
+                const res = await fetch('/api/db', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+                if (json.success || res.ok) {
+                    logActivity(`Menambahkan produk baru: ${payload.name} (Stok: ${payload.stock})`);
+                    alert('Produk baru berhasil disimpan ke Cloud!');
+                    closeProductModal();
+                    switchTab('products');
+                } else {
+                    alert('Gagal menyimpan produk.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan koneksi.');
+            }
+        }
+
+        // ================= KELOLA KARYAWAN =================
+        function renderEmployeeManagement(container) {
+            let staffListHTML = usersDB.map((u, idx) => `
+                <div class="p-4 border rounded-xl flex justify-between items-center bg-slate-50">
+                    <div>
+                        <strong>${u.name}</strong> 
+                        <span class="text-xs bg-slate-200 px-2 py-0.5 rounded ml-2">Username: ${u.username}</span><br>
+                        <span class="text-xs text-slate-400">Role: ${u.role.toUpperCase()}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="${u.role === 'owner' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'} px-3 py-1 rounded-full text-xs font-bold">${u.role.toUpperCase()}</span>
+                        ${u.username !== 'yuda' ? `<button onclick="deleteEmployee(${idx})" class="text-xs bg-rose-50 text-rose-600 px-3 py-1 rounded-lg font-semibold hover:bg-rose-100">Hapus</button>` : ''}
+                    </div>
+                </div>`).join('');
+
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">👥 Kelola Data Karyawan & Akses</h2>
+                        <p class="text-sm text-slate-500">Tambah akun staff baru atau hapus akses operasional.</p>
+                    </div>
+                    <button onclick="modalTambahKaryawan()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">+ Tambah Karyawan Baru</button>
+                </div>
+                <div class="space-y-3">${staffListHTML}</div>`;
         }
 
         function modalTambahKaryawan() {
@@ -318,8 +478,41 @@
 
             usersDB.push({ username: newUsername.trim().toLowerCase(), pass: 'staff123', name: namaLengkap, role: 'staff', mustChangePass: true });
             localStorage.setItem('khanza_users_db', JSON.stringify(usersDB));
-            alert('Karyawan berhasil ditambahkan! Password default-nya adalah "staff123" dan wajib diganti saat pertama kali ia login.');
+            logActivity(`Menambahkan akun karyawan baru: ${namaLengkap} (${newUsername})`);
+            alert('Karyawan berhasil ditambahkan! Password default: "staff123".');
             switchTab('employees');
+        }
+
+        function deleteEmployee(idx) {
+            if (confirm("Yakin ingin menghapus akses karyawan ini?")) {
+                let removed = usersDB.splice(idx, 1);
+                localStorage.setItem('khanza_users_db', JSON.stringify(usersDB));
+                logActivity(`Menghapus akun karyawan: ${removed[0].name}`);
+                switchTab('employees');
+            }
+        }
+
+        // ================= FETCH DATA DARI TIDB CLOUD =================
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch('/api/db?action=get_orders');
+                const json = await res.json();
+                let totalOmset = 0, totalModal = 0;
+                if (json.success && json.data.length > 0) {
+                    json.data.forEach(o => {
+                        totalOmset += Number(o.price || 0);
+                        totalModal += Number(o.hpp || 0);
+                    });
+                }
+                let totalProfit = totalOmset - totalModal;
+                document.getElementById('statOmset').innerText = `Rp ${totalOmset.toLocaleString('id-ID')}`;
+                document.getElementById('statModal').innerText = `Rp ${totalModal.toLocaleString('id-ID')}`;
+                document.getElementById('statProfit').innerText = `Rp ${totalProfit.toLocaleString('id-ID')}`;
+            } catch (err) {
+                document.getElementById('statOmset').innerText = "Rp 0";
+                document.getElementById('statModal').innerText = "Rp 0";
+                document.getElementById('statProfit').innerText = "Rp 0";
+            }
         }
 
         async function loadProductsData() {
@@ -339,12 +532,33 @@
                             <td class="py-4 px-4 font-medium text-slate-800">Rp ${Number(p.price).toLocaleString('id-ID')}</td>
                             ${profitCol}
                             <td class="py-4 px-4"><span class="bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-xs font-bold">${p.stock} Pcs</span></td>
-                            <td class="py-4 px-4 text-center"><button class="text-indigo-600 text-xs bg-indigo-50 px-3 py-1.5 rounded-lg">Edit</button></td>
+                            <td class="py-4 px-4 text-center"><span class="text-xs text-slate-400">Aktif</span></td>
                         </tr>`;
                     });
                     document.getElementById('productTableBody').innerHTML = html;
                 } else {
-                    document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Belum ada data produk di database.</td></tr>`;
+                    document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Belum ada data produk.</td></tr>`;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadTrackingData() {
+            try {
+                const res = await fetch('/api/db?action=get_orders');
+                const json = await res.json();
+                if(json.success && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(o => {
+                        html += `<tr class="hover:bg-slate-50 transition">
+                            <td class="py-4 px-4 font-mono font-bold text-indigo-600">${o.awb || '-'}</td>
+                            <td class="py-4 px-4 font-semibold text-slate-800">${o.product_name}</td>
+                            <td class="py-4 px-4 font-medium">Rp ${Number(o.price).toLocaleString('id-ID')}</td>
+                            <td class="py-4 px-4"><span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold">${o.status || 'Dikemas'}</span></td>
+                        </tr>`;
+                    });
+                    document.getElementById('orderTableBody').innerHTML = html;
+                } else {
+                    document.getElementById('orderTableBody').innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Belum ada data resi pengiriman.</td></tr>`;
                 }
             } catch (err) { console.error(err); }
         }
