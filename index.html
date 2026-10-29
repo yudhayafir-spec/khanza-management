@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khanza Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+            <h1 class="text-xl font-bold">🧸 Khanza Management System (Shopee Toy Store)</h1>
+            <span id="userInfo" class="text-sm bg-indigo-700 px-3 py-1 rounded">Online - TiDB Cloud Connected</span>
+        </header>
+
+        <main class="flex-1 p-6 max-w-6xl mx-auto w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card Produk / Stok -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-lg font-semibold mb-4 text-slate-800">📦 Inventory Mainan Anak</h2>
+                    <div id="productList" class="space-y-2">
+                        <p class="text-gray-500">Memuat data produk dari Cloud...</p>
+                    </div>
+                </div>
+
+                <!-- Card Pesanan / Transaksi -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-lg font-semibold mb-4 text-slate-800">📋 Daftar Pesanan Masuk</h2>
+                    <div id="orderList" class="space-y-2">
+                        <p class="text-gray-500">Memuat data pesanan...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                // Ambil Produk
+                const prodRes = await fetch('/api/db?action=get_products');
+                const prodJson = await prodRes.json();
+                if(prodJson.success) {
+                    let html = '';
+                    prodJson.data.forEach(p => {
+                        html += `<div class="p-3 bg-slate-50 border rounded flex justify-between items-center">
+                            <div><strong>${p.name}</strong><br><span class="text-xs text-gray-500">Stok: ${p.stock}</span></div>
+                            <span class="font-bold text-indigo-600">Rp ${p.price.toLocaleString()}</span>
+                        </div>`;
+                    });
+                    document.getElementById('productList').innerHTML = html;
+                }
+
+                // Ambil Pesanan
+                const ordRes = await fetch('/api/db?action=get_orders');
+                const ordJson = await ordRes.json();
+                if(ordJson.success) {
+                    let html = '';
+                    ordJson.data.forEach(o => {
+                        html += `<div class="p-3 bg-slate-50 border rounded flex justify-between items-center">
+                            <div><strong>${o.product_name}</strong><br><span class="text-xs text-gray-500">Resi: ${o.awb} | Status: ${o.status}</span></div>
+                            <span class="font-bold text-green-600">Rp ${o.price.toLocaleString()}</span>
+                        </div>`;
+                    });
+                    document.getElementById('orderList').innerHTML = html;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        fetchData();
+    </script>
+</body>
+</html>
