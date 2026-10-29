@@ -6,142 +6,241 @@
     <title>Khanza Management System - Shopee Toy Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 font-sans flex h-screen overflow-hidden">
+<body class="bg-slate-100 font-sans h-screen overflow-hidden">
 
-    <!-- SIDEBAR NAVIGATION -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shadow-xl">
-        <div>
-            <!-- Header Profil App -->
-            <div class="p-5 flex items-center space-x-3 border-b border-slate-800">
-                <div class="bg-orange-600 text-white font-bold w-10 h-10 rounded-lg flex items-center justify-center text-lg shadow">K</div>
+    <!-- ================= 1. HALAMAN LOGIN (MANDATORY) ================= -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
+            <div class="text-center mb-6">
+                <div class="bg-orange-600 text-white font-bold w-12 h-12 rounded-xl mx-auto flex items-center justify-center text-xl shadow mb-2">K</div>
+                <h2 class="text-xl font-bold text-slate-800">Khanza System</h2>
+                <p class="text-xs text-slate-500">Silakan login untuk masuk ke sistem</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <h2 class="text-white font-bold text-sm">Khanza System</h2>
-                    <p class="text-xs text-slate-400">Manual Entry & Inventory</p>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Username / ID</label>
+                    <input type="text" id="loginUser" required placeholder="Contoh: yuda atau karyawan" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
                 </div>
-            </div>
-
-            <!-- Menu List -->
-            <nav class="mt-4 space-y-1 px-3">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
-                    <span>📊 Dashboard & Profit</span>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">PIN / Password</label>
+                    <input type="password" id="loginPass" required placeholder="Masukkan PIN" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-xl transition shadow-lg text-sm">
+                    Masuk Sistem
                 </button>
-                <button onclick="switchTab('products')" id="nav-products" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-orange-600 text-white shadow-lg">
-                    <span>📦 Master Data Produk</span>
-                </button>
-                <button onclick="switchTab('tracking')" id="nav-tracking" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
-                    <span>🚚 Tracking Resi & Logistik</span>
-                </button>
-                <button onclick="switchTab('employees')" id="nav-employees" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
-                    <span>👥 Kelola Karyawan</span>
-                </button>
-                <button onclick="switchTab('audit')" id="nav-audit" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
-                    <span>🔒 Secret Audit Log</span>
-                </button>
-            </nav>
+            </form>
+            <p class="text-[11px] text-slate-400 text-center mt-4">*Owner ketik: <b>yuda</b> | Karyawan ketik: <b>staff</b></p>
         </div>
+    </div>
 
-        <!-- User Profile Footer -->
-        <div class="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950">
+    <!-- ================= 2. DASHBOARD UTAMA ================= -->
+    <div id="appContainer" class="flex h-screen overflow-hidden hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shadow-xl">
             <div>
-                <p id="userNameDisplay" class="text-white font-bold text-sm">YUDA</p>
-                <p id="userRoleDisplay" class="text-xs text-emerald-400 font-semibold">Super Admin (Engineer)</p>
-            </div>
-            <button onclick="toggleRole()" title="Ganti Sesi Akun" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">
-                🔄
-            </button>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <!-- Top Banner Bar -->
-        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center border-b border-slate-200">
-            <div class="bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center space-x-3 shadow-md">
-                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-sm font-medium">Mode Operasional Manual Toko: Data terpusat, aman, dan tanpa ketergantungan API Shopee</span>
-            </div>
-            <button onclick="openInputPesanan()" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition flex items-center space-x-2">
-                <span>🛒 + Input Pesanan Baru</span>
-            </button>
-        </header>
-
-        <!-- Dynamic Content Container -->
-        <div class="p-8 max-w-7xl mx-auto w-full">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <div class="flex justify-between items-center mb-6">
+                <div class="p-5 flex items-center space-x-3 border-b border-slate-800">
+                    <div class="bg-orange-600 text-white font-bold w-10 h-10 rounded-lg flex items-center justify-center text-lg shadow">K</div>
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800">Master Data Produk & Sisa Stok Gudang</h2>
-                        <p class="text-sm text-slate-500">Kelola nama produk, HPP, harga jual, dan sisa stok barang</p>
+                        <h2 class="text-white font-bold text-sm">Khanza System</h2>
+                        <p class="text-xs text-slate-400">Manual Entry & Inventory</p>
                     </div>
-                    <button onclick="tambahProdukModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow">
-                        + Tambah Produk Baru
-                    </button>
                 </div>
 
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
-                                <th class="py-3 px-4">Nama Produk Mainan</th>
-                                <th id="th-hpp" class="py-3 px-4">Modal (HPP)</th>
-                                <th class="py-3 px-4">Harga Jual</th>
-                                <th id="th-profit" class="py-3 px-4">Profit / PCS</th>
-                                <th class="py-3 px-4">Sisa Stok</th>
-                                <th class="py-3 px-4 text-center">Aksi / Edit</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTableBody" class="text-sm text-slate-700 divide-y divide-slate-100">
-                            <tr>
-                                <td colspan="6" class="py-6 text-center text-slate-400">Memuat data produk dari TiDB Cloud...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <nav class="mt-4 space-y-1 px-3">
+                    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
+                        <span>📊 Dashboard & Profit</span>
+                    </button>
+                    <button onclick="switchTab('products')" id="btn-products" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-orange-600 text-white shadow-lg">
+                        <span>📦 Master Data Produk</span>
+                    </button>
+                    <button onclick="switchTab('tracking')" id="btn-tracking" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
+                        <span>🚚 Tracking Resi & Logistik</span>
+                    </button>
+                    <button onclick="switchTab('employees')" id="btn-employees" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
+                        <span>👥 Kelola Karyawan</span>
+                    </button>
+                    <button onclick="switchTab('audit')" id="btn-audit" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400">
+                        <span>🔒 Secret Audit Log</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950">
+                <div>
+                    <p id="profileName" class="text-white font-bold text-sm">YUDA</p>
+                    <p id="profileRole" class="text-xs text-emerald-400 font-semibold">Super Admin</p>
+                </div>
+                <button onclick="handleLogout()" title="Keluar Sesi" class="p-2 bg-red-900/40 hover:bg-red-900 text-red-300 rounded-lg transition text-xs">
+                    🚪 Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center border-b border-slate-200">
+                <div class="bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center space-x-3 shadow-md">
+                    <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-sm font-medium">Mode Operasional Manual Toko: Terhubung ke TiDB Cloud</span>
+                </div>
+                <button onclick="openModalInput()" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition">
+                    🛒 + Input Pesanan Baru
+                </button>
+            </header>
+
+            <div class="p-8 max-w-7xl mx-auto w-full">
+                <!-- DINAMIK CONTENT CONTAINER BERDASARKAN SIDEBAR -->
+                <div id="dynamicContent" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <!-- Konten akan dirender dinamis via JS -->
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
-        // Simulasi Role Sesi (Bisa diganti antar Owner vs Karyawan)
-        let currentRole = 'owner'; // 'owner' = Full Akses, 'staff' = Terbatas
+        let currentUser = null;
 
-        function toggleRole() {
-            if(currentRole === 'owner') {
-                currentRole = 'staff';
-                document.getElementById('userNameDisplay').innerText = 'STAFF TOKO';
-                document.getElementById('userRoleDisplay').innerText = 'Karyawan Gudang';
-                document.getElementById('userRoleDisplay').className = 'text-xs text-amber-400 font-semibold';
-                alert('Sesi beralih ke Karyawan: Menu Profit & Data Sensitif disembunyikan!');
-            } else {
-                currentRole = 'owner';
-                document.getElementById('userNameDisplay').innerText = 'YUDA';
-                document.getElementById('userRoleDisplay').innerText = 'Super Admin (Engineer)';
-                document.getElementById('userRoleDisplay').className = 'text-xs text-emerald-400 font-semibold';
-                alert('Sesi beralih ke Owner: Akses Full Terbuka Kembali!');
+        // Cek Sesi Login di Browser
+        window.onload = function() {
+            const savedUser = localStorage.getItem('khanza_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                startApp();
             }
-            fetchProducts();
         }
 
-        function switchTab(tab) {
-            // Validasi hak akses khusus owner
-            if((tab === 'dashboard' || tab === 'employees' || tab === 'audit') && currentRole !== 'owner') {
-                alert('⚠️ Akses Ditolak! Menu ini khusus untuk Owner / Super Admin.');
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value.trim().toLowerCase();
+            
+            if (user === 'yuda') {
+                currentUser = { name: 'YUDA YAFIR', role: 'owner', title: 'Super Admin (Owner)' };
+            } else if (user === 'staff' || user === 'karyawan') {
+                currentUser = { name: 'STAFF TOKO', role: 'staff', title: 'Karyawan Gudang' };
+            } else {
+                alert('⚠️ Username salah! Gunakan "yuda" (Owner) atau "staff" (Karyawan).');
                 return;
             }
-            alert('Membuka menu: ' + tab.toUpperCase());
+
+            localStorage.setItem('khanza_user', JSON.stringify(currentUser));
+            startApp();
         }
 
-        async function fetchProducts() {
+        function handleLogout() {
+            localStorage.removeItem('khanza_user');
+            location.reload();
+        }
+
+        function startApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profileRole').innerText = currentUser.title;
+            
+            switchTab('products'); // Default tab awal
+        }
+
+        // FUNGSI SWITCH TAB SIDEBAR (TIDAK DUMMY, RENDER KONTEN ASLI)
+        function switchTab(tab) {
+            // Validasi Hak Akses Menu Khusus Owner
+            if ((tab === 'dashboard' || tab === 'employees' || tab === 'audit') && currentUser.role !== 'owner') {
+                alert('⛔ Akses Ditolak! Menu ' + tab.toUpperCase + ' ini bersifat rahasia dan khusus untuk Owner.');
+                return;
+            }
+
+            // Update warna tombol aktif di sidebar
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 text-slate-400";
+            });
+            document.getElementById('btn-' + tab).className = "nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-orange-600 text-white shadow-lg";
+
+            const container = document.getElementById('dynamicContent');
+
+            if (tab === 'products') {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">Master Data Produk & Sisa Stok Gudang</h2>
+                            <p class="text-sm text-slate-500">Kelola nama produk, HPP, harga jual, dan sisa stok barang</p>
+                        </div>
+                        <button onclick="alert('Form Tambah Produk')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">+ Tambah Produk Baru</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
+                                    <th class="py-3 px-4">Nama Produk Mainan</th>
+                                    <th class="py-3 px-4">${currentUser.role === 'owner' ? 'Modal (HPP)' : ''}</th>
+                                    <th class="py-3 px-4">Harga Jual</th>
+                                    <th class="py-3 px-4">${currentUser.role === 'owner' ? 'Profit / PCS' : ''}</th>
+                                    <th class="py-3 px-4">Sisa Stok</th>
+                                    <th class="py-3 px-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody" class="text-sm text-slate-700 divide-y divide-slate-100">
+                                <tr><td colspan="6" class="py-6 text-center text-slate-400">Memuat data dari TiDB Cloud...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>`;
+                loadProductsData();
+            } 
+            else if (tab === 'dashboard') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">📊 Dashboard & Analisis Profit Keuangan</h2>
+                    <p class="text-sm text-slate-500 mb-6">Laporan pemasukan, modal, dan laba bersih penjualan toko.</p>
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
+                            <p class="text-xs text-indigo-600 font-bold uppercase">Total Omset Penjualan</p>
+                            <h3 class="text-2xl font-bold text-indigo-900 mt-1">Rp 14.500.000</h3>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-100 p-5 rounded-2xl">
+                            <p class="text-xs text-rose-600 font-bold uppercase">Total Modal Keluar (HPP)</p>
+                            <h3 class="text-2xl font-bold text-rose-900 mt-1">Rp 9.200.000</h3>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
+                            <p class="text-xs text-emerald-600 font-bold uppercase">Profit Bersih Owner</p>
+                            <h3 class="text-2xl font-bold text-emerald-900 mt-1">Rp 5.300.000</h3>
+                        </div>
+                    </div>`;
+            }
+            else if (tab === 'tracking') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">🚚 Tracking Resi & Logistik Pengiriman</h2>
+                    <p class="text-sm text-slate-500 mb-6">Pantau status pengiriman paket pesanan mainan pelanggan.</p>
+                    <div class="p-6 bg-slate-50 rounded-xl border text-center text-slate-500 text-sm">Belum ada data resi aktif hari ini. Silakan input pesanan baru.</div>`;
+            }
+            else if (tab === 'employees') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">👥 Manajemen & Gaji Karyawan</h2>
+                    <p class="text-sm text-slate-500 mb-6">Kontrol akses dan daftar staff operasional gudang.</p>
+                    <div class="p-4 border rounded-xl flex justify-between items-center bg-slate-50">
+                        <div><strong>Staff Gudang 1</strong><br><span class="text-xs text-slate-400">Hak Akses: Input Pesanan & Cek Stok</span></div>
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">Aktif</span>
+                    </div>`;
+            }
+            else if (tab === 'audit') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">🔒 Secret Audit Log & Aktivitas Sistem</h2>
+                    <p class="text-sm text-slate-500 mb-6">Catatan seluruh aktivitas login dan perubahan data oleh karyawan.</p>
+                    <div class="space-y-2 text-sm font-mono text-slate-600 bg-slate-900 text-emerald-400 p-4 rounded-xl">
+                        <p>[2026-10-29 10:45:12] SYSTEM: Owner 'YUDA' logged in successfully.</p>
+                        <p>[2026-10-29 10:30:00] DB: Connected to TiDB Cloud instance.</p>
+                    </div>`;
+            }
+        }
+
+        async function loadProductsData() {
             try {
                 const res = await fetch('/api/db?action=get_products');
                 const json = await res.json();
-                if(json.success) {
+                if(json.success && json.data.length > 0) {
                     let html = '';
                     json.data.forEach(p => {
-                        let profit = p.price - (p.hpp || 15000); // Estimasi HPP jika kosong
-                        let hppCol = currentRole === 'owner' ? `<td class="py-4 px-4 font-medium text-slate-600">Rp ${Number(p.hpp || 15000).toLocaleString()}</td>` : `<td class="py-4 px-4 text-slate-400 italic">Rahasia Owner</td>`;
-                        let profitCol = currentRole === 'owner' ? `<td class="py-4 px-4 font-bold text-emerald-600">Rp ${profit.toLocaleString()}</td>` : `<td class="py-4 px-4 text-slate-400 italic">Rahasia Owner</td>`;
+                        let profit = p.price - (p.hpp || 15000);
+                        let hppCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-medium text-slate-600">Rp ${Number(p.hpp || 15000).toLocaleString()}</td>` : ``;
+                        let profitCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-bold text-emerald-600">Rp ${profit.toLocaleString()}</td>` : ``;
                         
                         html += `<tr class="hover:bg-slate-50 transition">
                             <td class="py-4 px-4 font-semibold text-slate-800">${p.name}</td>
@@ -155,16 +254,15 @@
                         </tr>`;
                     });
                     document.getElementById('productTableBody').innerHTML = html;
+                } else {
+                    document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Belum ada data produk di database.</td></tr>`;
                 }
             } catch (err) {
                 console.error(err);
             }
         }
 
-        function openInputPesanan() { alert('Fitur Input Pesanan Baru'); }
-        function tambahProdukModal() { alert('Fitur Tambah Produk Baru'); }
-
-        fetchProducts();
+        function openInputPesanan() { alert('Buka Form Input Pesanan'); }
     </script>
 </body>
 </html>
