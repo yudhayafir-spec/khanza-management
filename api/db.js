@@ -10,14 +10,16 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Koneksi langsung membaca env Vercel atau fallback aman
         const connection = await mysql.createConnection({
-            host: process.env.DB_HOST || process.env.TIDB_HOST,
-            port: Number(process.env.DB_PORT || process.env.TIDB_PORT || 4000),
-            user: process.env.DB_USER || process.env.TIDB_USER,
-            password: process.env.DB_PASSWORD || process.env.TIDB_PASSWORD,
-            database: 'khanza',
-            ssl: { rejectUnauthorized: true }
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT || 4000),
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE || 'khanza',
+            ssl: {
+                minVersion: 'TLSv1.2',
+                rejectUnauthorized: true
+            }
         });
 
         const action = req.method === 'POST' ? req.body.action : req.query.action;
@@ -63,7 +65,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, message: 'Action tidak dikenal' });
 
     } catch (error) {
-        console.error("DB Error:", error);
+        console.error("DB Error Detail:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
 }
