@@ -192,7 +192,7 @@
             document.getElementById('profileName').innerText = currentUser.name;
             document.getElementById('profileRole').innerText = currentUser.role === 'owner' ? 'Super Admin (Owner)' : 'Karyawan Gudang';
             
-            switchTab('products');
+            switchTab('dashboard');
         }
 
         function switchTab(tab) {
@@ -208,7 +208,27 @@
 
             const container = document.getElementById('dynamicContent');
 
-            if (tab === 'products') {
+            if (tab === 'dashboard') {
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">📊 Dashboard & Analisis Profit Keuangan</h2>
+                    <p class="text-sm text-slate-500 mb-6">Laporan riil pemasukan, modal, dan laba bersih dari TiDB Cloud.</p>
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
+                            <p class="text-xs text-indigo-600 font-bold uppercase">Total Omset Penjualan</p>
+                            <h3 id="statOmset" class="text-2xl font-bold text-indigo-900 mt-1">Menghitung...</h3>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-100 p-5 rounded-2xl">
+                            <p class="text-xs text-rose-600 font-bold uppercase">Total Modal (HPP)</p>
+                            <h3 id="statModal" class="text-2xl font-bold text-rose-900 mt-1">Menghitung...</h3>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
+                            <p class="text-xs text-emerald-600 font-bold uppercase">Profit Bersih Owner</p>
+                            <h3 id="statProfit" class="text-2xl font-bold text-emerald-900 mt-1">Menghitung...</h3>
+                        </div>
+                    </div>`;
+                loadDashboardStats();
+            }
+            else if (tab === 'products') {
                 container.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
                         <div>
@@ -236,16 +256,6 @@
                     </div>`;
                 loadProductsData();
             } 
-            else if (tab === 'dashboard') {
-                container.innerHTML = `
-                    <h2 class="text-xl font-bold text-slate-800 mb-2">📊 Dashboard & Analisis Profit Keuangan</h2>
-                    <p class="text-sm text-slate-500 mb-6">Laporan pemasukan, modal, dan laba bersih penjualan toko.</p>
-                    <div class="grid grid-cols-3 gap-6">
-                        <div class="bg-indigo-50 border p-5 rounded-2xl"><p class="text-xs text-indigo-600 font-bold">OMSET</p><h3 class="text-2xl font-bold text-indigo-900 mt-1">Rp 14.500.000</h3></div>
-                        <div class="bg-rose-50 border p-5 rounded-2xl"><p class="text-xs text-rose-600 font-bold">MODAL (HPP)</p><h3 class="text-2xl font-bold text-rose-900 mt-1">Rp 9.200.000</h3></div>
-                        <div class="bg-emerald-50 border p-5 rounded-2xl"><p class="text-xs text-emerald-600 font-bold">PROFIT BERSIH</p><h3 class="text-2xl font-bold text-emerald-900 mt-1">Rp 5.300.000</h3></div>
-                    </div>`;
-            }
             else if (tab === 'employees') {
                 let staffListHTML = usersDB.map(u => `
                     <div class="p-4 border rounded-xl flex justify-between items-center bg-slate-50">
@@ -271,6 +281,35 @@
             }
         }
 
+        // FUNGSI UTAMA KALKULASI PROFiT REAL-TIME DARI TiDB CLOUD
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch('/api/db?action=get_orders');
+                const json = await res.json();
+                
+                let totalOmset = 0;
+                let totalModal = 0;
+
+                if (json.success && json.data.length > 0) {
+                    json.data.forEach(o => {
+                        totalOmset += Number(o.price || 0);
+                        totalModal += Number(o.hpp || 0);
+                    });
+                }
+
+                let totalProfit = totalOmset - totalModal;
+
+                document.getElementById('statOmset').innerText = `Rp ${totalOmset.toLocaleString('id-ID')}`;
+                document.getElementById('statModal').innerText = `Rp ${totalModal.toLocaleString('id-ID')}`;
+                document.getElementById('statProfit').innerText = `Rp ${totalProfit.toLocaleString('id-ID')}`;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('statOmset').innerText = "Rp 0";
+                document.getElementById('statModal').innerText = "Rp 0";
+                document.getElementById('statProfit').innerText = "Rp 0";
+            }
+        }
+
         function modalTambahKaryawan() {
             let newUsername = prompt("Masukkan Username Karyawan Baru:");
             if (!newUsername) return;
@@ -291,13 +330,13 @@
                     let html = '';
                     json.data.forEach(p => {
                         let profit = p.price - (p.hpp || 15000);
-                        let hppCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-medium text-slate-600">Rp ${Number(p.hpp || 15000).toLocaleString()}</td>` : ``;
-                        let profitCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-bold text-emerald-600">Rp ${profit.toLocaleString()}</td>` : ``;
+                        let hppCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-medium text-slate-600">Rp ${Number(p.hpp || 15000).toLocaleString('id-ID')}</td>` : ``;
+                        let profitCol = currentUser.role === 'owner' ? `<td class="py-4 px-4 font-bold text-emerald-600">Rp ${profit.toLocaleString('id-ID')}</td>` : ``;
                         
                         html += `<tr class="hover:bg-slate-50 transition">
                             <td class="py-4 px-4 font-semibold text-slate-800">${p.name}</td>
                             ${hppCol}
-                            <td class="py-4 px-4 font-medium text-slate-800">Rp ${Number(p.price).toLocaleString()}</td>
+                            <td class="py-4 px-4 font-medium text-slate-800">Rp ${Number(p.price).toLocaleString('id-ID')}</td>
                             ${profitCol}
                             <td class="py-4 px-4"><span class="bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-xs font-bold">${p.stock} Pcs</span></td>
                             <td class="py-4 px-4 text-center"><button class="text-indigo-600 text-xs bg-indigo-50 px-3 py-1.5 rounded-lg">Edit</button></td>
@@ -305,7 +344,7 @@
                     });
                     document.getElementById('productTableBody').innerHTML = html;
                 } else {
-                    document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Belum ada data produk.</td></tr>`;
+                    document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Belum ada data produk di database.</td></tr>`;
                 }
             } catch (err) { console.error(err); }
         }
