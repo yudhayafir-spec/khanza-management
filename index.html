@@ -19,7 +19,7 @@
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Username / ID</label>
-                    <input type="text" id="loginUser" required placeholder="Contoh: yuda atau staff" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    <input type="text" id="loginUser" required placeholder="Contoh: yuda atau staff1" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password / PIN</label>
@@ -29,7 +29,7 @@
                     Masuk Sistem
                 </button>
             </form>
-            <p class="text-[11px] text-slate-400 text-center mt-4">*Default Owner: <b>yuda</b> (Pass: yuda123) | Staff: <b>staff1</b> (Pass: staff123)</p>
+            <p class="text-[11px] text-slate-400 text-center mt-4">*Owner: <b>yuda</b> (Pass: yuda123) | Staff: <b>staff1</b> (Pass: staff123)</p>
         </div>
     </div>
 
@@ -43,7 +43,7 @@
             <form onsubmit="saveNewPassword(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password Baru</label>
-                    <input type="password" id="newPassInput" required placeholder="Minimal 6 karakter" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    <input type="password" id="newPassInput" required placeholder="Minimal 5 karakter" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm">
                 </div>
                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow-lg text-sm">
                     Simpan & Masuk Sistem
@@ -117,12 +117,12 @@
     </div>
 
     <script>
-        // Database Simulasi Akun Karyawan & Owner di LocalStorage
-        let usersDB = JSON.parse(localStorage.getItem('khanza_users_db')) || [
+        let defaultUsers = [
             { username: 'yuda', pass: 'yuda123', name: 'YUDA YAFIR', role: 'owner', mustChangePass: false },
             { username: 'staff1', pass: 'staff123', name: 'KARYAWAN GUDANG', role: 'staff', mustChangePass: true }
         ];
 
+        let usersDB = JSON.parse(localStorage.getItem('khanza_users_db')) || defaultUsers;
         let currentUser = null;
 
         window.onload = function() {
@@ -130,6 +130,7 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 if (currentUser.mustChangePass) {
+                    document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('changePassModal').classList.remove('hidden');
                 } else {
                     startApp();
@@ -166,11 +167,9 @@
                 return;
             }
 
-            // Update password dan ubah status mustChangePass jadi false
             currentUser.pass = newPass;
             currentUser.mustChangePass = false;
 
-            // Update ke database user
             usersDB = usersDB.map(x => x.username === currentUser.username ? currentUser : x);
             localStorage.setItem('khanza_users_db', JSON.stringify(usersDB));
             localStorage.setItem('khanza_current_user', JSON.stringify(currentUser));
@@ -273,12 +272,12 @@
         }
 
         function modalTambahKaryawan() {
-            let user baru = prompt("Masukkan Username Karyawan Baru:");
-            if (!userbaru) return;
+            let newUsername = prompt("Masukkan Username Karyawan Baru:");
+            if (!newUsername) return;
             let namaLengkap = prompt("Masukkan Nama Lengkap Karyawan:");
             if (!namaLengkap) return;
 
-            usersDB.push({ username: userbaru, pass: 'staff123', name: namaLengkap, role: 'staff', mustChangePass: true });
+            usersDB.push({ username: newUsername.trim().toLowerCase(), pass: 'staff123', name: namaLengkap, role: 'staff', mustChangePass: true });
             localStorage.setItem('khanza_users_db', JSON.stringify(usersDB));
             alert('Karyawan berhasil ditambahkan! Password default-nya adalah "staff123" dan wajib diganti saat pertama kali ia login.');
             switchTab('employees');
