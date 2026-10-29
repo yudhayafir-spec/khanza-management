@@ -10,12 +10,13 @@ export default async function handler(req, res) {
     }
 
     try {
+        // Koneksi langsung ditaruh di sini biar gak pusing sama env Vercel
         const connection = await mysql.createConnection({
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT || 4000),
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE || 'khanza',
+            host: 'ISI_HOST_TIDB_LU_DISINI', // contoh: gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+            port: 4000,
+            user: 'ISI_USER_LU_DISINI',     // contoh: 3W...root
+            password: 'ISI_PASSWORD_LU_DISINI',
+            database: 'khanza',
             ssl: {
                 minVersion: 'TLSv1.2',
                 rejectUnauthorized: true
