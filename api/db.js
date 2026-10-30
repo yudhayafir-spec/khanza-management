@@ -9,18 +9,15 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    let connection;
     try {
-        // Koneksi langsung ditaruh di sini biar gak pusing sama env Vercel
-        const connection = await mysql.createConnection({
-            host: 'ISI_HOST_TIDB_LU_DISINI', // contoh: gateway01.ap-southeast-1.prod.aws.tidbcloud.com
-            port: 4000,
-            user: 'ISI_USER_LU_DISINI',     // contoh: 3W...root
-            password: 'ISI_PASSWORD_LU_DISINI',
-            database: 'khanza',
-            ssl: {
-                minVersion: 'TLSv1.2',
-                rejectUnauthorized: true
-            }
+        connection = await mysql.createConnection({
+            host: process.env.DB_HOST || process.env.TIDB_HOST,
+            port: Number(process.env.DB_PORT || process.env.TIDB_PORT || 4000),
+            user: process.env.DB_USER || process.env.TIDB_USER,
+            password: process.env.DB_PASSWORD || process.env.TIDB_PASSWORD,
+            database: process.env.DB_DATABASE || process.env.TIDB_DATABASE || 'khanza',
+            ssl: { rejectUnauthorized: true }
         });
 
         const action = req.method === 'POST' ? req.body.action : req.query.action;
@@ -62,11 +59,14 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true, message: 'Pesanan berhasil disimpan' });
         }
 
-        await connection.end();
+        if (connection) await connection.end();
         return res.status(400).json({ success: false, message: 'Action tidak dikenal' });
 
     } catch (error) {
-        console.error("DB Error Detail:", error);
+        if (connection) {
+            try { await connection.end(); } catch(e) {}
+        }
+        console.error("DB Error:", error.message);
         return res.status(500).json({ success: false, error: error.message });
     }
 }
